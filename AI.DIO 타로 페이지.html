@@ -3,10 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>짝사랑 속마음 타로 리더</title>
+  <title>💘 연애 타로 💘</title>
+  
   <style>
+    @font-face {
+    font-family: 'omyu_pretty';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    } 
     body {
-      font-family: "Nanum Gothic", sans-serif;
+      font-family: "omyu_pretty", sans-serif;
       background: linear-gradient(to bottom, #000035 0%, #4A437F 70%, #5C4DA0 100%);
       min-height: 100vh;
       margin: 0;
@@ -14,6 +21,16 @@
       color: #FAFAFF;
       text-align: center;
       overflow-x: hidden;
+      font-size: 20px;
+    }
+    .guide-message {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px dashed #fff;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 16px 0;
+      font-size: 18px;
+      animation: fadeIn 0.5s ease-in-out;
     }
     .container_tarot {
       max-width: 900px;
@@ -23,49 +40,70 @@
       border-radius: 20px;
       box-shadow: 0 0 20px rgba(250, 250, 255, 0.1);
     }
-    h2 {
-      color: #FAFAFF;
-      font-size: 28px;
-      margin-bottom: 10px;
+    select, .shuffle-btn {
+      font-family: "omyu_pretty", sans-serif;
+      font-size: 16px;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+      border: none;
+      line-height: 1.5;        /* ⬅ 글자 높이 비율 명확히 */
+      height: 44px;             /* ⬅ 높이 고정으로 잘림 방지 */
+      box-sizing: border-box;  /* ⬅ 패딩 포함 높이 계산 */
     }
-    p.guide {
-      color: #ccc;
-      margin-bottom: 30px;
-      font-size: 18px;
+    .shuffle-btn {
+      font-family: "omyu_pretty", sans-serif;
+      background-color: #FAFAFF;
+      color: #000035;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
     }
     .tarot_area {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 12px;
+      margin-top: 20px;
     }
-    .taroChoiceImg {
+    .taroCard {
+      width: 100px;
+      height: 150px; /* 2:3 비율 유지 */
       perspective: 1000px;
     }
-    .taroChoiceImg-inner {
-      width: 90px;
-      height: 140px;
+    .taroCard-inner {
+      width: 100%;
+      height: 100%;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.8s ease;
     }
-    .taroChoiceImg.selected .taroChoiceImg-inner {
+    .taroCard.flipped .taroCard-inner {
       transform: rotateY(180deg);
+    }
+    .taroCard.reversing .taroCard-inner {
+      transform: rotateY(0deg) !important;
     }
     .card-face {
       position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border-radius: 12px;
       backface-visibility: hidden;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 1px;
     }
     .card-back {
-      background-image: url('https://img.daily.co.kr/www.daily.co.kr/unse/tarot/card_back_tarotheart.png?v=1&CDN=1');
+      background: url('Taro/Taro_Back.png');
       background-size: cover;
+      padding: 4px;               /* ✅ 이미지가 모서리에 닿지 않게 */
+      box-sizing: border-box;     /* ✅ padding 포함 크기 계산 */
     }
     .card-front {
       background-color: #FAFAFF;
-      transform: rotateY(180deg);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -73,37 +111,29 @@
       font-weight: bold;
       color: #000035;
       border: 2px solid #aaa;
+      transform: rotateY(180deg);
     }
-    .btns {
-      margin-top: 30px;
-    }
-    .btns input {
-      padding: 12px 30px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background: #FAFAFF;
+    .card-number {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: 14px;
       color: #000035;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
     }
-    #tarot_result {
+    .card-output {
+      text-align: left;
       margin-top: 40px;
-      display: none;
-      animation: fadeIn 1s ease forwards;
       background: #ffffff0f;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(250,250,255,0.1);
-      text-align: left;
+      animation: fadeIn 1s ease forwards;
     }
-    #tarot_result dt {
+    .card-output dt {
       font-weight: bold;
       margin-top: 20px;
       color: #FAFAFF;
     }
-    #tarot_result dd {
+    .card-output dd {
       margin: 10px 0 20px;
       line-height: 1.6;
       color: #FAFAFF;
@@ -116,152 +146,180 @@
 </head>
 <body>
   <section class="container_tarot">
-    <h2>💜 짝사랑 속마음 타로 리딩 💜</h2>
-    <p class="guide">짝사랑 중인 상대방을 떠올리며<br><strong>가장 끌리는 카드 3장</strong>을 선택해보세요.</p>
+    <h2>💘 연애 타로 💘</h2>
+    <p>지금 마음속에 떠오르는 사람이 있나요? ✨</p>
+    <p>당신의 연애 여정을 함께 그려볼게요. <br>
+    천천히 카드를 한 장씩 뽑으며, 사랑에 담긴 속마음을 들여다봐요. 💌</p>
 
-    <div class="tarot_area" id="taroChoice"></div>
 
-    <div class="btns">
-      <input type="button" value="다시 섞기 🔄" onclick="shuffle()">
-    </div>
+    <select id="spreadSelect">
+      <option value="noselect">보고 싶은 타로를 선택해주세요.</option>
+      <option value="checkin">우리 사이, 지금 어떤 마음일까요?</option>
+      <option value="compatibility">나와 그 사람, 잘 맞는 걸까요?</option>
+      <option value="repair">식어버린 마음, 다시 데워질 수 있을까요?</option>
+      <option value="triangle">혹시… 그 사람, 마음이 흔들리고 있진 않을까요?</option>
+      <option value="comeback">헤어진 우리, 다시 이어질 수 있을까요?</option>
+      <option value="magnetic">지금 나는 어떤 매력을 뿜고 있을까요?</option>
+      <option value="secretcrush">혹시 나를 몰래 좋아하고 있는 사람이 있다면?</option>
+      <option value="futurelove">내 인연은 지금 어디쯤 다가오고 있을까요?</option>
+      <option value="selfcare">요즘의 나는 어떤 상태일까요?</option>
+      <option value="delicious">사람들이 반하는 나만의 매력 포인트는?</option>
+    </select>
+    <div id="guideMessage" class="guide-message" style="display: none;"></div>
+    <button class="shuffle-btn" id="shuffleBtn">🔄 다시 섞기</button>
 
-    <dl id="tarot_result">
-      <dt>🌙 상대방의 마음 한 조각</dt>
-      <dd id="rtarot_cons"></dd>
-      <dt>🖼️ 이미지 속 장면이 전하는 분위기</dt>
-      <dd id="rtarot_story"></dd>
-      <dt>📚 카드의 상징</dt>
-      <dd id="rtarot_define"></dd>
-      <dt>✨ 마음을 읽는 키워드</dt>
-      <dd id="rtarot_keyword"></dd>
-    </dl>
+    <div class="tarot_area" id="cardArea"></div>
+    <dl class="card-output" id="cardResult"></dl>
+  </section>
 
-    <script>
-      const meanings = {
-        1: { cons: "상대는 당신에게 호기심을 가지고 있어요.", story: "새로운 관계의 가능성을 탐색 중입니다.", define: "순수한 시작", keyword: "호기심, 가능성, 새출발" },
-        2: { cons: "상대는 조용히 당신을 지켜보고 있습니다.", story: "감정을 쉽게 드러내지 않지만, 내면엔 관심이 있습니다.", define: "침묵 속 집중", keyword: "관찰, 인내, 분석" },
-        3: { cons: "상대는 당신과의 관계에서 성장을 기대하고 있습니다.", story: "함께라면 더 큰 무언가를 만들 수 있을 거라 생각해요.", define: "창조적 협력", keyword: "확장, 소통, 이상향" },
-        4: { cons: "상대는 감정을 단단히 숨기고 있어요.", story: "불안보단 안정이 우선인 사람이에요.", define: "통제와 안정", keyword: "보수성, 자기방어, 거리두기" },
-        5: { cons: "상대는 전통적인 방식의 관계를 선호합니다.", story: "혼란스러운 감정보단, 명확한 역할을 중시해요.", define: "질서와 규범", keyword: "책임감, 명확함, 신중함" },
-        6: { cons: "상대는 당신과의 조화를 상상하고 있어요.", story: "감정의 교류가 이미 시작되었어요.", define: "감정적 균형", keyword: "조화, 이해, 교감" },
-        7: { cons: "상대는 지금 감정보단 목표에 집중 중입니다.", story: "당신은 그 여정의 한 장면일 수 있어요.", define: "의지와 추진력", keyword: "전진, 집중, 거리" },
-        8: { cons: "상대는 내면의 갈등으로 혼란스러워요.", story: "감정의 균형이 아직 잡히지 않았습니다.", define: "용기와 자기극복", keyword: "내면투쟁, 조절, 회복중" },
-        9: { cons: "상대는 현재 자신만의 시간을 필요로 해요.", story: "관계보다 자아에 집중하고 있어요.", define: "고독 속 성찰", keyword: "거리두기, 숙고, 회피" },
-        10: { cons: "관계에 큰 전환점이 다가오고 있어요.", story: "운명의 수레바퀴가 움직입니다.", define: "예상치 못한 변화", keyword: "기회, 전환, 우연" },
-        11: { cons: "상대는 감정보단 이성적으로 관계를 보고 있어요.", story: "공평한 판단 속에 감정을 숨기고 있어요.", define: "균형과 공정성", keyword: "이성, 정의, 판단" },
-        12: { cons: "상대는 지금 마음을 멈추고 상황을 관망 중이에요.", story: "당신을 어떻게 대할지 고민하고 있어요.", define: "수동적 희생", keyword: "정체, 인내, 고려중" },
-        13: { cons: "상대의 감정은 끝났을 수도 있어요.", story: "하지만 새로운 관계로의 가능성도 있어요.", define: "종말과 재탄생", keyword: "변화, 종료, 새출발" },
-        14: { cons: "감정을 조심스럽게 조율하고 있어요.", story: "지금은 천천히 다가가는 중입니다.", define: "조화로운 흐름", keyword: "인내, 조절, 부드러움" },
-        15: { cons: "상대는 욕망이나 집착에 흔들리고 있어요.", story: "감정이 순수하지 않을 수 있어요.", define: "속박과 유혹", keyword: "집착, 미련, 불안정" },
-        16: { cons: "예기치 못한 상황으로 마음이 무너졌습니다.", story: "지금은 상처 회복의 시기예요.", define: "붕괴와 재정비", keyword: "상실, 재구성, 충격" },
-        17: { cons: "당신에게 희망을 걸고 있어요.", story: "서서히 마음이 열리고 있습니다.", define: "희망의 징조", keyword: "빛, 기대, 긍정" },
-        18: { cons: "감정이 혼란스럽고 명확하지 않아요.", story: "진심이 무엇인지 스스로도 헷갈려요.", define: "환상과 불확실성", keyword: "혼돈, 의심, 직관" },
-        19: { cons: "상대는 당신과의 밝은 미래를 꿈꾸고 있어요.", story: "함께할 수 있다는 기대가 커지고 있어요.", define: "성취와 따뜻함", keyword: "열정, 긍정, 공감" },
-        20: { cons: "과거를 돌아보며 마음을 정리 중입니다.", story: "새로운 기회에 대한 가능성을 열어두고 있어요.", define: "부활과 반성", keyword: "회상, 기회, 용서" },
-        21: { cons: "당신은 상대에게 완성된 사람처럼 보여요.", story: "그는 당신과의 관계에 큰 의미를 둡니다.", define: "완성된 조화", keyword: "결실, 감탄, 안정" },
-        22: { cons: "상대는 예측 불가한 태도를 보일 수 있어요.", story: "감정의 방향이 어디로 튈지 몰라요.", define: "자유와 가능성", keyword: "즉흥성, 낙관, 예외성" }
-      };
+  <script>
+  let meanings = {}, spreads = {}, spreadInterpretations = {};
+  
+  fetch('meanings.json')
+  .then(response => response.json())
+  .then(data => {
+    meanings = data;
+    console.log("✅ 카드 데이터 로드 완료 : ", spreads);
+  })
+  .catch(error => console.error("❌ 카드 데이터 로딩 실패 :", error));
+  fetch('spreads.json')
+  .then(response => response.json())
+  .then(data => {
+    spreads = data;
+    console.log("✅ 스프레드 데이터 로드 완료 : ", spreads);
+  })
+  .catch(error => console.error("❌ 스프레드 데이터 로딩 실패 :", error));
+  fetch('spreadInterpretations.json')
+  .then(response => response.json())
+  .then(data => {
+    spreadInterpretations = data;
+    console.log("✅ 해석 데이터 로드 완료 : ", spreads);
+  })
+  .catch(error => console.error("❌ 해석 데이터 로딩 실패 :", error));
+    
+    let selected = [];
+    let selectedSpread = "noselect";
+    let numToDraw = 0;
+    let deck = [];
+    let clickedCount = 0;
 
-      const area = document.getElementById("taroChoice");
-      for (let i = 1; i <= 22; i++) {
-        const div = document.createElement("div");
-        div.className = "taroChoiceImg";
-        div.setAttribute("data-id", i);
+    function setupCards() {
+        const cardArea = document.getElementById("cardArea");
+        const cardResult = document.getElementById("cardResult");
+        const questions = spreads[selectedSpread];
+        numToDraw = questions.length;
+        selected = [];
+        cardArea.innerHTML = "";
+        cardResult.innerHTML = "";
 
-        const inner = document.createElement("div");
-        inner.className = "taroChoiceImg-inner";
+        // 질문과 해석 자리 미리 출력
+        questions.forEach((q, i) => {
+          const dt = document.createElement("dt");
+          dt.innerHTML = `❓ ${q} <br>`;
+          const dd = document.createElement("dd");
+          dd.id = `answer-${i}`;
+          dd.innerHTML = ""; // 초기에는 비워둠
+          cardResult.appendChild(dt);
+          cardResult.appendChild(dd);
+        });
 
-        const back = document.createElement("div");
-        back.className = "card-face card-back";
+        const total = spreads[selectedSpread].length;
+        deck = [...Array(22).keys()].map(i => i + 1); // 1~22
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
 
-        const front = document.createElement("div");
-        front.className = "card-face card-front";
-        front.innerText = i;
+        for (let i = 0; i < 22; i++) {
+          const cardNumber = deck[i]; // 실제 셔플된 번호
 
-        inner.appendChild(back);
-        inner.appendChild(front);
-        div.appendChild(inner);
-        area.appendChild(div);
-      }
-
-      let selected = [];
-
-      function createCards() {
-        const area = document.getElementById("taroChoice");
-        area.innerHTML = "";
-        const ids = [...Array(22).keys()].map(i => i + 1).sort(() => Math.random() - 0.5);
-
-        ids.forEach(i => {
-          const div = document.createElement("div");
-          div.className = "taroChoiceImg";
-          div.setAttribute("data-id", i);
+          const card = document.createElement("div");
+          card.className = "taroCard";
 
           const inner = document.createElement("div");
-          inner.className = "taroChoiceImg-inner";
+          inner.className = "taroCard-inner";
 
           const back = document.createElement("div");
           back.className = "card-face card-back";
 
           const front = document.createElement("div");
           front.className = "card-face card-front";
-          front.innerText = i;
+          const img = document.createElement("img");
+          img.src = `Taro/Taro_${cardNumber - 1}.png`; // 0부터 시작하는 이미지
+          img.alt = `Taro Card ${cardNumber}`;
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.borderRadius = "12px";
+          front.appendChild(img);
 
           inner.appendChild(back);
           inner.appendChild(front);
-          div.appendChild(inner);
-          area.appendChild(div);
+          card.appendChild(inner);
 
-          // ✅ 여기서 이벤트 리스너 바로 등록
-          div.addEventListener('click', () => {
-            const id = parseInt(div.getAttribute('data-id'));
-            if (selected.length >= 3 || selected.includes(id)) return;
-            selected.push(id);
-            div.classList.add('selected');
-
-            if (selected.length === 3) {
-              const last = selected[selected.length - 1];
-              const result = meanings[last] || {};
-              setTimeout(() => {
-                document.getElementById('rtarot_cons').innerText = result.cons || '';
-                document.getElementById('rtarot_story').innerText = result.story || '';
-                document.getElementById('rtarot_define').innerText = result.define || '';
-                document.getElementById('rtarot_keyword').innerText = result.keyword || '';
-                document.getElementById('tarot_result').style.display = 'block';
-              }, 1000);
-            }
-          });
-        });
+          card.onclick = () => flipCard(card, cardNumber);
+          cardArea.appendChild(card);
+        }
       }
 
+    function flipCard(card, number) {
+      if (selected.length >= spreads[selectedSpread].length || card.classList.contains("flipped")) return;
 
-      document.querySelectorAll('.taroChoiceImg').forEach(card => {
-        card.addEventListener('click', () => {
-          const id = parseInt(card.getAttribute('data-id'));
-          if (selected.length >= 3 || selected.includes(id)) return;
-          selected.push(id);
-          card.classList.add('selected');
+      card.classList.add("flipped");
 
-          if (selected.length === 3) {
-            const last = selected[selected.length - 1];
-            const result = meanings[last] || {};
-            setTimeout(() => {
-              document.getElementById('rtarot_cons').innerText = result.cons || '상대방의 마음을 감지할 수 없습니다';
-              document.getElementById('rtarot_story').innerText = result.story || '';
-              document.getElementById('rtarot_define').innerText = result.define || '';
-              document.getElementById('rtarot_keyword').innerText = result.keyword || '';
-              document.getElementById('tarot_result').style.display = 'block';
-            }, 1000);
-          }
-        });
-      });
+      const qIndex = selected.length;
+      selected.push(number);
 
-      function shuffle() {
-        selected = [];
-        document.getElementById('tarot_result').style.display = 'none';
-        createCards();
+      // 기존에 setupCards에서 생성한 dd 요소를 찾음
+      const dd = document.getElementById(`answer-${qIndex}`);
+      const m = meanings[number] || { title: "", message: "🔮 아직 준비된 해석이 없네요. 곧 더 따뜻한 조언을 드릴게요!" };
+
+      let contextual = "";
+      if (
+        spreadInterpretations[selectedSpread] &&
+        spreadInterpretations[selectedSpread][qIndex] &&
+        spreadInterpretations[selectedSpread][qIndex][number]
+      ) {
+        contextual = `<br>🔮<em>${spreadInterpretations[selectedSpread][qIndex][number]}</em>`;
       }
-      window.onload = createCards();
-    </script>
-  </section>
+      dd.innerHTML = `🃏 뽑은 카드 : ${m.title}${contextual}<br><br>`;
+    }
+
+    document.getElementById("spreadSelect").addEventListener("change", (e) => {
+    selectedSpread = e.target.value;
+
+    const guideDiv = document.getElementById("guideMessage");
+    if (selectedSpread === "noselect" || !spreads[selectedSpread]) {
+      guideDiv.style.display = "none";
+      guideDiv.innerText = "";
+      return;
+    }
+
+    const count = spreads[selectedSpread].length;
+    guideDiv.innerText = `💡 총 ${count}장의 카드를 뽑아주세요!`;
+    guideDiv.style.display = "block";
+    setupCards()
+  });
+
+    document.getElementById("shuffleBtn").addEventListener("click", () => {
+    const allCards = document.querySelectorAll(".taroCard");
+    if (allCards.length === 0) {
+      setupCards(); // 처음 로딩 시에는 바로 생성
+      return;
+    }
+
+    allCards.forEach(card => {
+      card.classList.remove("flipped");
+      card.classList.add("reversing");
+    });
+
+    // 0.8초 후 실제 카드 섞기
+    setTimeout(() => {
+      allCards.forEach(card => card.classList.remove("reversing"));
+      setupCards();
+    }, 800);
+  });
+
+    window.onload = setupCards;
+  </script>
 </body>
 </html>
