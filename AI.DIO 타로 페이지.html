@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>💘 연애 타로 💘</title>
-  
   <style>
     @font-face {
     font-family: 'omyu_pretty';
@@ -47,9 +46,9 @@
       margin: 10px;
       border-radius: 6px;
       border: none;
-      line-height: 1.5;        /* ⬅ 글자 높이 비율 명확히 */
-      height: 44px;             /* ⬅ 높이 고정으로 잘림 방지 */
-      box-sizing: border-box;  /* ⬅ 패딩 포함 높이 계산 */
+      line-height: 1.5;        /* 글자 높이 비율 명확히 */
+      height: 44px;             /* 높이 고정으로 잘림 방지 */
+      box-sizing: border-box;  /* padding 포함 높이 계산 */
     }
     .shuffle-btn {
       font-family: "omyu_pretty", sans-serif;
@@ -99,8 +98,8 @@
     .card-back {
       background: url('Taro/Taro_Back.png');
       background-size: cover;
-      padding: 4px;               /* ✅ 이미지가 모서리에 닿지 않게 */
-      box-sizing: border-box;     /* ✅ padding 포함 크기 계산 */
+      padding: 4px;               /* 이미지가 모서리에 닿지 않게 */
+      box-sizing: border-box;     /* padding 포함 크기 계산 */
     }
     .card-front {
       background-color: #FAFAFF;
@@ -173,30 +172,30 @@
   </section>
 
   <script>
-  let meanings = {}, spreads = {}, spreadInterpretations = {};
-  
-  fetch('meanings.json')
-  .then(response => response.json())
-  .then(data => {
-    meanings = data;
-    console.log("✅ 카드 데이터 로드 완료 : ", spreads);
-  })
-  .catch(error => console.error("❌ 카드 데이터 로딩 실패 :", error));
-  fetch('spreads.json')
-  .then(response => response.json())
-  .then(data => {
-    spreads = data;
-    console.log("✅ 스프레드 데이터 로드 완료 : ", spreads);
-  })
-  .catch(error => console.error("❌ 스프레드 데이터 로딩 실패 :", error));
-  fetch('spreadInterpretations.json')
-  .then(response => response.json())
-  .then(data => {
-    spreadInterpretations = data;
-    console.log("✅ 해석 데이터 로드 완료 : ", spreads);
-  })
-  .catch(error => console.error("❌ 해석 데이터 로딩 실패 :", error));
-    
+    //#region "[     타로 DB 불러오기     ]"
+    let meanings = {}, spreads = {}, spreadInterpretations = {};
+    fetch('meanings.json')
+      .then(response => response.json())
+      .then(data => {
+        meanings = data;
+        console.log("✅ 카드 데이터 로드 완료 : ", spreads);
+      })
+      .catch(error => console.error("❌ 카드 데이터 로딩 실패 :", error));
+    fetch('spreads.json')
+      .then(response => response.json())
+      .then(data => {
+        spreads = data;
+        console.log("✅ 스프레드 데이터 로드 완료 : ", spreads);
+      })
+      .catch(error => console.error("❌ 스프레드 데이터 로딩 실패 :", error));
+    fetch('spreadInterpretations.json')
+      .then(response => response.json())
+      .then(data => {
+        spreadInterpretations = data;
+        console.log("✅ 해석 데이터 로드 완료 : ", spreads);
+      })
+      .catch(error => console.error("❌ 해석 데이터 로딩 실패 :", error));
+    //#endregion
     let selected = [];
     let selectedSpread = "noselect";
     let numToDraw = 0;
@@ -260,7 +259,6 @@
           cardArea.appendChild(card);
         }
       }
-
     function flipCard(card, number) {
       if (selected.length >= spreads[selectedSpread].length || card.classList.contains("flipped")) return;
 
@@ -285,26 +283,26 @@
     }
 
     document.getElementById("spreadSelect").addEventListener("change", (e) => {
-    selectedSpread = e.target.value;
+      selectedSpread = e.target.value;
 
-    const guideDiv = document.getElementById("guideMessage");
-    if (selectedSpread === "noselect" || !spreads[selectedSpread]) {
-      guideDiv.style.display = "none";
-      guideDiv.innerText = "";
-      return;
-    }
+      const guideDiv = document.getElementById("guideMessage");
+      if (selectedSpread === "noselect" || !spreads[selectedSpread]) {
+        guideDiv.style.display = "none";
+        guideDiv.innerText = "";
+        return;
+      }
 
-    const count = spreads[selectedSpread].length;
-    guideDiv.innerText = `💡 총 ${count}장의 카드를 뽑아주세요!`;
-    guideDiv.style.display = "block";
-    setupCards()
-  });
+      const count = spreads[selectedSpread].length;
+      guideDiv.innerText = `💡 총 ${count}장의 카드를 뽑아주세요!`;
+      guideDiv.style.display = "block";
+      setupCards()
+    });
 
     document.getElementById("shuffleBtn").addEventListener("click", () => {
-    const allCards = document.querySelectorAll(".taroCard");
-    if (allCards.length === 0) {
-      setupCards(); // 처음 로딩 시에는 바로 생성
-      return;
+      const allCards = document.querySelectorAll(".taroCard");
+      if (allCards.length === 0) {
+        setupCards(); // 처음 로딩 시에는 바로 생성
+        return;
     }
 
     allCards.forEach(card => {
@@ -318,7 +316,6 @@
       setupCards();
     }, 800);
   });
-
     window.onload = setupCards;
   </script>
 </body>
